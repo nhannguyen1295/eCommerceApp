@@ -178,12 +178,6 @@ namespace eCommerceApp.Server.Extensions
             });
         }
 
-        /// <summary>
-        /// DI reg for ValidateMediaTypeAttribute
-        /// </summary>
-        /// <param name="services"></param>
-        public static void DIConfigureValidateMediaTypeAttribute(this IServiceCollection services)
-        => services.AddScoped<ValidateMediaTypeAttribute>();
 
         /// <summary>
         /// DI reg for CategoryLinks, implement HATEOAS
@@ -281,5 +275,40 @@ namespace eCommerceApp.Server.Extensions
                 };
             });
         }
+
+        /// <summary>
+        /// DI reg for ProductRepository
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureProductRepository(this IServiceCollection services)
+        => services.AddScoped<IProductRepository, ProductRepository>();
+
+        /// <summary>
+        /// DI reg for ProductService
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureProductService(this IServiceCollection services)
+        => services.AddScoped<IProductService, ProductService>();
+
+        /// <summary>
+        /// DI reg for ProductCategoryRepository
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureProductCategoryRepository(this IServiceCollection services)
+        => services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
+
+        /// <summary>
+        /// DI reg for ValidateProductCategoryExistsAttribute
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureValidateProductCategoryExistsAttribute(this IServiceCollection services)
+        => services.AddScoped<ValidateProductCategoryExistsAttribute>();
+
+        /// <summary>
+        /// DI reg for ValidateProductExistAttribute
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureValidateProductExistAttribute(this IServiceCollection services)
+        => services.AddScoped<ValidateProductExistAttribute>();
     }
 }

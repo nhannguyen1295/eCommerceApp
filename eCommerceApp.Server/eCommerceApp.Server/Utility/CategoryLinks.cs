@@ -59,19 +59,19 @@ namespace eCommerceApp.Server.Utility
             return categoryWrapper;
         }
 
-        private List<Link> CreateLinksForCategory(HttpContext httpContext, Guid id, string fields = "")
+        private List<Link> CreateLinksForCategory(HttpContext httpContext, Guid categoryId, string fields = "")
         {
             var links = new List<Link>{
-                new Link(_linkGenerator.GetUriByAction(httpContext,"GetCategory",values:new{id, fields}),
+                new Link(_linkGenerator.GetUriByAction(httpContext,"GetCategory",values:new{categoryId, fields}),
                          "self",
                          "GET"),
-                new Link(_linkGenerator.GetUriByAction(httpContext,"DeleteCategory",values:new{id, fields}),
+                new Link(_linkGenerator.GetUriByAction(httpContext,"DeleteCategory",values:new{categoryId, fields}),
                          "delete_category",
                          "DELETE"),
-                new Link(_linkGenerator.GetUriByAction(httpContext,"UpdateCategory",values:new{id, fields}),
+                new Link(_linkGenerator.GetUriByAction(httpContext,"UpdateCategory",values:new{categoryId, fields}),
                          "update_category",
                          "PUT"),
-                new Link(_linkGenerator.GetUriByAction(httpContext,"PartiallyUpdateCategory",values:new{id, fields}),
+                new Link(_linkGenerator.GetUriByAction(httpContext,"PartiallyUpdateCategory",values:new{categoryId, fields}),
                          "partially_update_category",
                          "PATCH")
             };

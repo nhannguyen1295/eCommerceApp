@@ -13,8 +13,15 @@ namespace eCommerceApp.Server
             CreateMap<CategoryForCreationDTO, Category>();
             CreateMap<CategoryForUpdateDTO, Category>();
             CreateMap<CategoryForUpdateDTO, Category>().ReverseMap();
+
             CreateMap<UserForRegistrationDTO, User>();
             CreateMap<UserForUpdateDTO, User>();
+
+            CreateMap<Product, ProductDTO>();
+            CreateMap<ProductForCreationDTO, Product>();
+            CreateMap<ProductForUpdateDTO, Product>();
+            CreateMap<ProductForUpdateDTO, Product>().ReverseMap();
+
         }
     }
 }

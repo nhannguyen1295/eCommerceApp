@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace eCommerceApp.Server.ActionFilters
 {
-    public class ValidateCategoryExistsAttribute : IAsyncActionFilter
+    public class ValidateProductExistAttribute : IAsyncActionFilter
     {
-        private readonly IRepositoryManager _repository;
+        private readonly IRepositoryManager _repositoryManager;
         private readonly ILoggerManager _logger;
 
-        public ValidateCategoryExistsAttribute(IRepositoryManager repository, ILoggerManager logger)
+        public ValidateProductExistAttribute(IRepositoryManager repositoryManager, ILoggerManager logger)
         {
-            _repository = repository;
+            _repositoryManager = repositoryManager;
             _logger = logger;
         }
 
@@ -21,17 +21,17 @@ namespace eCommerceApp.Server.ActionFilters
         {
             var method = context.HttpContext.Request.Method;
             var trackChanges = (method.Equals("PUT") || method.Equals("PATCH")) ? true : false;
-            var id = (Guid)context.ActionArguments["categoryId"];
-            var category = await _repository.Category.GetCategoryAsync(id, trackChanges);
+            var productId = (Guid)context.ActionArguments["productId"];
+            var product = await _repositoryManager.Product.GetProductAsync(productId, trackChanges);
 
-            if (category == null)
+            if (product is null)
             {
-                _logger.LogInfo($"Category with id: {id} does not exist in the database");
+                _logger.LogInfo($"Product with id: {productId} does not exist in the database");
                 context.Result = new NotFoundResult();
             }
             else
             {
-                context.HttpContext.Items.Add("category", category);
+                context.HttpContext.Items.Add("product", product);
                 await next();
             }
         }

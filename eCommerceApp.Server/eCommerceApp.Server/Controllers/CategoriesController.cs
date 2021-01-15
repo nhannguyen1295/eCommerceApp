@@ -20,7 +20,7 @@ namespace eCommerceApp.Server.Controllers
     [ApiVersion("1.0")]
     [ApiExplorerSettings(GroupName = "v1")]
     [ApiController]
-    [Route("api/{v:apiversion}/categories")]
+    [Route("api/v{v:apiversion}/categories")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -39,10 +39,9 @@ namespace eCommerceApp.Server.Controllers
             _categoryLinks = dataShaper;
         }
 
-        [ResponseCache(Duration = 120)]
+        //[ResponseCache(Duration = 120)]
         [HttpGet(Name = "GetCategories")]
         [HttpHead]
-        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> GetCategories([FromQuery] CategoryParameters categoryParameters)
         {
             var categories = await _categoryService.GetCategoriesAsync(categoryParameters, trackChanges: false);
@@ -55,13 +54,13 @@ namespace eCommerceApp.Server.Controllers
             return links.HasLinks ? Ok(links.LinkedEntities) : Ok(links.ShapedEntities);
         }
 
-        [HttpGet("{id}", Name = "CategoryById")]
-        public async Task<IActionResult> GetCategory(Guid id)
+        [HttpGet("{categoryId}", Name = "CategoryById")]
+        public async Task<IActionResult> GetCategory(Guid categoryId)
         {
-            var category = await _categoryService.GetCategoryAsync(id, trackChanges: false);
+            var category = await _categoryService.GetCategoryAsync(categoryId, trackChanges: false);
             if (category == null)
             {
-                _loggerManager.LogInfo($"Category with id: {id} does not exist in the database");
+                _loggerManager.LogInfo($"Category with id: {categoryId} does not exist in the database");
                 return NotFound();
             }
 
@@ -89,9 +88,11 @@ namespace eCommerceApp.Server.Controllers
 
             var categoryToReturn = _mapper.Map<CategoryDTO>(categoryEntity);
 
-            return CreatedAtRoute("CategoryById", new { id = categoryToReturn.Id }, categoryToReturn);
+            return CreatedAtRoute("CategoryById", new { categoryId = categoryToReturn.Id }, categoryToReturn);
         }
 
+        // URL from swaggerUI is ERR
+        // Exact URL: https://localhost:5001/api/1/categories/collection/(id1, id2,..idn)
         [HttpGet("collection/({ids})", Name = "CategoryCollection")]
         public async Task<IActionResult> GetCategoryCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
         {
@@ -102,6 +103,7 @@ namespace eCommerceApp.Server.Controllers
             }
 
             var categoryEntities = await _categoryService.GetByIdsAsync(ids, trackChanges: false);
+
             if (ids.Count() != categoryEntities.Count())
             {
                 _loggerManager.LogError("Some ids are not valid in a collection");
@@ -130,9 +132,9 @@ namespace eCommerceApp.Server.Controllers
             return CreatedAtRoute("CategoryCollection", new { ids }, categoryCollectionToReturn);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{categoryId}")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
-        public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryForUpdateDTO category)
+        public async Task<IActionResult> UpdateCategory(Guid categoryId, [FromBody] CategoryForUpdateDTO category)
         {
             var categoryEntity = HttpContext.Items["category"] as Category;
             categoryEntity.UpdatedAt = DateTime.UtcNow.ToLocalTime();
@@ -143,9 +145,9 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{categoryId}")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        public async Task<IActionResult> DeleteCategory(Guid categoryId)
         {
             var category = HttpContext.Items["category"] as Category;
 
@@ -155,9 +157,10 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{categoryId}")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
-        public async Task<IActionResult> PartiallyUpdateCategory(Guid id, [FromBody] JsonPatchDocument<CategoryForUpdateDTO> patchDoc)
+        public async Task<IActionResult> PartiallyUpdateCategory(Guid categoryId,
+                                                                 [FromBody] JsonPatchDocument<CategoryForUpdateDTO> patchDoc)
         {
             if (patchDoc == null)
             {

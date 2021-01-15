@@ -35,9 +35,13 @@ namespace eCommerceApp.Server.Controllers
         }
 
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDTO userForRegistration)
         {
+            if (userForRegistration.Roles.Contains("Administrator"))
+            {
+                return BadRequest("Access denied");
+            }
+
             var user = _mapper.Map<User>(userForRegistration);
 
             var result = await _userManager.CreateAsync(user, userForRegistration.Password);
@@ -57,7 +61,6 @@ namespace eCommerceApp.Server.Controllers
         }
 
         [HttpPost("login")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDTO user)
         {
             if (!await _authManager.ValidateUser(user))
@@ -71,7 +74,6 @@ namespace eCommerceApp.Server.Controllers
 
         // For normal user
         [HttpPut, Authorize]
-        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> UpdateAccount([FromBody] UserForUpdateDTO userForRolesManagerDTO)
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -95,7 +97,6 @@ namespace eCommerceApp.Server.Controllers
 
         // For administrator
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
-        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> UpdateRoles(Guid Id, [FromBody] UserForRolesManagerDTO userForRolesManagerDTO)
         {
             var user = await _userManager.FindByIdAsync(Id.ToString());

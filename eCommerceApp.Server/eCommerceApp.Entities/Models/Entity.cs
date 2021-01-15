@@ -13,7 +13,7 @@ namespace eCommerceApp.Entities.Models
     // <Links>System.Collections.Generic.List`1[Entities.Models.Link]<Links>
     public class Entity : DynamicObject, IXmlSerializable, IDictionary<string, object>
     {
-        private readonly string root = "EntityWithLinks";
+        private readonly string root = "Links";
         private readonly IDictionary<string, object> expando = null;
 
         public Entity()

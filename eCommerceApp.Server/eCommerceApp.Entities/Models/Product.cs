@@ -11,20 +11,16 @@ namespace eCommerceApp.Entities.Models
         {
             InsertedAt = DateTime.UtcNow.ToLocalTime();
             UpdatedAt = DateTime.UtcNow.ToLocalTime();
-            ProductStatus = Quantity > 0 ? ProductStatus.Availabel : ProductStatus.NonAvailabel;
+            ProductStatus = ProductStatus.Availabel;
         }
         public Guid Id { get; set; }
         [MaxLength(255)]
         public string Name { get; set; }
         public string Description { get; set; }
-
-        // n - 1 referencing to ProductStatus 
-        public Guid ProductStatusId { get; set; }
-
         public double RegularPrice { get; set; }
         public double DiscountPrice { get; set; }
         public long Quantity { get; set; }
-        public bool Taxable { get; set; } = false;
+        public bool Taxable { get; set; } = true;
         public ProductStatus ProductStatus { get; set; }
         public DateTime InsertedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

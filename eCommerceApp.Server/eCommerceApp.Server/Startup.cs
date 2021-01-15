@@ -20,6 +20,8 @@ using System.IO;
 using eCommerceApp.Contract;
 using AutoMapper;
 using AspNetCoreRateLimit;
+using eCommerceApp.Server.ActionFilters;
+using Microsoft.AspNetCore.Http;
 
 namespace eCommerceApp.Server
 {
@@ -39,7 +41,7 @@ namespace eCommerceApp.Server
             services.ConfigureCors();
             services.AddAutoMapper(typeof(Startup));
             services.ConfigureVersioning();
-            services.ConfigureResponseCaching();
+            //services.ConfigureResponseCaching(); // Commented to test EF Core
             services.ConfigureHttpCacheHeaders();
             services.AddMemoryCache();
 
@@ -51,10 +53,14 @@ namespace eCommerceApp.Server
             services.DIConfigureCategoryService();
             services.DIConfigureValidateCategoryExistAttribute();
             services.DIConfigureValidationFilterAttribute();
-            services.DIConfigureValidateMediaTypeAttribute();
             services.DIConfigureDataShaper();
             services.DIConfigureCategoryLinks();
             services.DIConfigureAuthenticationManager();
+            services.DIConfigureProductRepository();
+            services.DIConfigureProductService();
+            services.DIConfigureProductCategoryRepository();
+            services.DIConfigureValidateProductCategoryExistsAttribute();
+            services.DIConfigureValidateProductExistAttribute();
 
             services.ConfigureSQLDataContext(Configuration);
             services.AddAuthentication();
@@ -70,6 +76,7 @@ namespace eCommerceApp.Server
 
             services.AddControllers(configure =>
             {
+                configure.Filters.Add(typeof(ValidateMediaTypeAttribute));
                 configure.RespectBrowserAcceptHeader = true;
                 configure.ReturnHttpNotAcceptable = true; // HTTP 406 if client required non-support media types
             }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();

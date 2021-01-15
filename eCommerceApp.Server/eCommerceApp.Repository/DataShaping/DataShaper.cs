@@ -35,6 +35,7 @@ namespace eCommerceApp.Repository.DataShaping
                 }
             }
             else requiredProperties = Properties.ToList();
+
             return requiredProperties;
         }
 
