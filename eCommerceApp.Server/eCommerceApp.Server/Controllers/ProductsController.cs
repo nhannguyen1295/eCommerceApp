@@ -43,6 +43,9 @@ namespace eCommerceApp.Server.Controllers
         public async Task<IActionResult> GetProductsForCategory(Guid categoryId,
                                                                 [FromQuery] ProductParameters productParameters)
         {
+            if(!productParameters.ValidPriceRange){
+                return BadRequest("Max price cannot be less than min age.");
+            }
             var productCategories = await _productService.GetProductsForCategoryAsync(categoryId, trackChanges: false);
             var products = await _productService.GetProductsAsync(productParameters, trackChanges: false);
             var productsFilter = products.Where(x => productCategories.Any(productCategory => productCategory.ProductId == x.Id));

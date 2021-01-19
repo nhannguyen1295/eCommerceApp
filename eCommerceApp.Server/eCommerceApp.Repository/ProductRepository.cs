@@ -27,9 +27,11 @@ namespace eCommerceApp.Repository
 
         public async Task<PagedList<Product>> GetProductsAsync(ProductParameters productParameters, bool trackChanges)
         {
-            var products = await FindAll(trackChanges).SearchAsync(productParameters.SearchTerm, "Name");
-            var productsOrdered = products.OrderBy(x => x.Name);
-            return PagedList<Product>.ToPagedList(productsOrdered,
+            var products = await FindByCondition(x => x.RegularPrice >= productParameters.MinPrice
+                                                      && x.RegularPrice <= productParameters.MaxPrice,
+                                                 trackChanges).SearchAsync<Product>(productParameters.SearchTerm, "Name");
+            var productsSorted = products.Sort(productParameters.OrderBy);
+            return PagedList<Product>.ToPagedList(productsSorted,
                                                   productParameters.PageNumber,
                                                   productParameters.PageSize);
         }

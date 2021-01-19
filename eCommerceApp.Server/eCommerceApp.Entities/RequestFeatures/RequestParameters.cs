@@ -13,5 +13,6 @@ namespace eCommerceApp.Entities.RequestFeatures
         }
 
         public string Fields { get; set; }
+        public string OrderBy{get;set;}
     }
 }
