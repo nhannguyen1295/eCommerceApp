@@ -38,12 +38,21 @@ namespace eCommerceApp.Server.Controllers
             _dataShaper = dataShaper;
         }
 
+        /// <summary>
+        /// Get a list of Product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="productParameters"></param>
+        /// <returns>The list of product associated with categoryId</returns>
+        /// <response code="200">Returns the list of all categories</response>
+        /// <response code="404">CategoryId does not exist in the database</response>
         [HttpGet(Name = "GetProductsForCategory")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
         public async Task<IActionResult> GetProductsForCategory(Guid categoryId,
                                                                 [FromQuery] ProductParameters productParameters)
         {
-            if(!productParameters.ValidPriceRange){
+            if (!productParameters.ValidPriceRange)
+            {
                 return BadRequest("Max price cannot be less than min age.");
             }
             var productCategories = await _productService.GetProductsForCategoryAsync(categoryId, trackChanges: false);
@@ -59,6 +68,14 @@ namespace eCommerceApp.Server.Controllers
             return Ok(_dataShaper.ShapeData(productDTO, productParameters.Fields));
         }
 
+        /// <summary>
+        /// Get a product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="productId"></param>
+        /// <returns>A product</returns>
+        /// <response code="200">Return a product</response>
+        /// <response code="404">CategoryId or ProductId does not exist in the database or them does not associated</response>
         [HttpGet("{productId}", Name = "GetProductForCategory")]
         [ServiceFilter(typeof(ValidateProductCategoryExistsAttribute))]
         public async Task<IActionResult> GetProductForCategory(Guid categoryId, Guid productId)
@@ -73,6 +90,15 @@ namespace eCommerceApp.Server.Controllers
             return Ok(productDTO);
         }
 
+        /// <summary>
+        /// Create a newly created product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="product"></param>
+        /// <returns>A newly created product</returns>
+        /// <response code="201">Returns the list of all newly created products</response>
+        /// <response code="404">If CategoryId does not exist in the database</response>
+        /// <response code="422">If model invalid</response>
         [HttpPost(Name = "CreateProduct")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
@@ -86,6 +112,15 @@ namespace eCommerceApp.Server.Controllers
                                   new { categoryId, productId = productToReturn.Id }, productToReturn);
         }
 
+        /// <summary>
+        /// Get a collection of product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="ids"></param>
+        /// <returns>The collection of product</returns>
+        ///  <response code="200">Returns the collection of newly created products</response>
+        ///  <response code="404">If categoryId or productId does not exist in the database</response>
+        ///  <response code="400">If parameter ids is NULL</response>
         [HttpGet("collection/({ids})", Name = "ProductCollection")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
         public async Task<IActionResult> GetProductCollection(Guid categoryId, [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
@@ -115,6 +150,15 @@ namespace eCommerceApp.Server.Controllers
             return Ok(productToReturn);
         }
 
+        /// <summary>
+        /// Create a collection of new product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="productsCollection"></param>
+        /// <returns>A collection of newly created products</returns>
+        ///  <response code="201">Returns the collection of newly created products</response>
+        /// <response code="400">If parameter ids is NULL</response>
+        /// <response code="404">If categoryId does not exist in the database</response>
         [HttpPost("collection")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
@@ -133,6 +177,13 @@ namespace eCommerceApp.Server.Controllers
             return CreatedAtRoute("ProductCollection", new { categoryId, ids }, productCollectionToReturn);
         }
 
+        /// <summary>
+        /// Delete a product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="productId"></param>
+        /// <returns>No content</returns>
+        /// <response code="404">CategoryId or ProductId does not exist in the database or them does not associated</response>
         [HttpDelete("{productId}")]
         [ServiceFilter(typeof(ValidateProductCategoryExistsAttribute))]
         public async Task<IActionResult> DeleteProductForCategory(Guid categoryId, Guid productId)
@@ -145,6 +196,15 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Update product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="productId"></param>
+        /// <param name="product"></param>
+        /// <returns>No content</returns>
+        /// <response code="404">CategoryId or ProductId does not exist in the database or them does not associated</response>
+        /// <response code="405">If productID is NULL</response>
         [HttpPut("{productId}")]
         [ServiceFilter(typeof(ValidateProductCategoryExistsAttribute))]
         public async Task<IActionResult> UpdateProductForCategory(Guid categoryId,
@@ -161,6 +221,15 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Partially update product for category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="productId"></param>
+        /// <param name="patchDoc"></param>
+        /// <returns>No content</returns>
+        /// <response code="404">CategoryId or ProductId does not exist in the database or them does not associated</response>
+        /// <response code="405">If productID is NULL</response>
         [HttpPatch("{productId}")]
         [ServiceFilter(typeof(ValidateProductCategoryExistsAttribute))]
         public async Task<IActionResult> PartiallyUpdateProduct(Guid categoryId,
@@ -189,7 +258,12 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
-
+        /// <summary>
+        /// Get categories for product
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns>The list of categories for product</returns>
+        /// <response code="404">CaProductId does not exist in the database</response>
         [HttpGet("/products/{productId}/categories", Name = "GetCategoriesForProduct")]
         [ServiceFilter(typeof(ValidateProductExistAttribute))]
         public async Task<IActionResult> GetCategoriesForProduct(Guid productId)

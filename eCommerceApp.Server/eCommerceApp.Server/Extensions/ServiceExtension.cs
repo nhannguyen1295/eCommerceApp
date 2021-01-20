@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using AspNetCoreRateLimit;
 using eCommerceApp.Contract;
@@ -61,6 +63,10 @@ namespace eCommerceApp.Server.Extensions
                     Url = new Uri("https://www.facebook.com/nhannguyen.dev/")
                 }
             });
+
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath);
 
             // Adding Authorization Support
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

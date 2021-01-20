@@ -34,7 +34,16 @@ namespace eCommerceApp.Server.Controllers
             _authManager = authManager;
         }
 
+        /// <summary>
+        /// Register User
+        /// </summary>
+        /// <param name="userForRegistration"></param>
+        /// <returns>201 if created successfully</returns>
+        /// <response code="422">If invalid object</response>
+        /// <response code="400">If user/email is already taken</response>
+        /// <response code="403">If try set account is admin role</response>
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDTO userForRegistration)
         {
             if (userForRegistration.Roles.Contains("Administrator"))
@@ -60,7 +69,15 @@ namespace eCommerceApp.Server.Controllers
             return StatusCode(201);
         }
 
+        /// <summary>
+        /// User login
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// <response code="401">If wrong username/password</response>
+        /// <response code="422">If invalid object</response>
         [HttpPost("login")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDTO user)
         {
             if (!await _authManager.ValidateUser(user))
@@ -72,7 +89,13 @@ namespace eCommerceApp.Server.Controllers
             return Ok(new { Token = await _authManager.CreateToken() });
         }
 
-        // For normal user
+        /// <summary>
+        /// Update Account for normally user
+        /// </summary>
+        /// <param name="userForRolesManagerDTO"></param>
+        /// <returns>No content</returns>
+        /// <response code="204">Update successfully</response>
+        /// <response code="401">If not logged in</response>
         [HttpPut, Authorize]
         public async Task<IActionResult> UpdateAccount([FromBody] UserForUpdateDTO userForRolesManagerDTO)
         {
@@ -95,7 +118,14 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
-        // For administrator
+        /// <summary>
+        /// Set role, only for user have Administrator permission
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="userForRolesManagerDTO"></param>
+        /// <returns>No content</returns>
+        /// <response code="401">If not logged in</response>
+        /// <response code="403">If user does not have admin role try access</response>
         [HttpPut("{id}"), Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateRoles(Guid Id, [FromBody] UserForRolesManagerDTO userForRolesManagerDTO)
         {

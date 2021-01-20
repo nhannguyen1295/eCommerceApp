@@ -39,7 +39,13 @@ namespace eCommerceApp.Server.Controllers
             _categoryLinks = dataShaper;
         }
 
-        //[ResponseCache(Duration = 120)]
+        /// <summary>
+        /// Get the list of all Categories
+        /// </summary>
+        /// <param name="categoryParameters"></param>
+        /// <returns>The categories list</returns>
+        /// <response code="200">Returns the list of all categories</response>
+        /// <response code="400">If wrong API version</response>
         [HttpGet(Name = "GetCategories")]
         [HttpHead]
         public async Task<IActionResult> GetCategories([FromQuery] CategoryParameters categoryParameters)
@@ -54,6 +60,13 @@ namespace eCommerceApp.Server.Controllers
             return links.HasLinks ? Ok(links.LinkedEntities) : Ok(links.ShapedEntities);
         }
 
+        /// <summary>
+        /// Get a category by Id
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns>A category</returns>
+        /// <response code="200">Returns category</response>
+        /// <response code="404">If categoryId does not exist in the database</response>
         [HttpGet("{categoryId}", Name = "CategoryById")]
         public async Task<IActionResult> GetCategory(Guid categoryId)
         {
@@ -68,6 +81,14 @@ namespace eCommerceApp.Server.Controllers
             return Ok(categoryDTO);
         }
 
+        /// <summary>
+        /// Creates a newly created category
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns>A newly created category</returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item is null</response>
+        /// <response code="422">If the model is invalid</response>
         [HttpPost(Name = "CreateCategory")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryForCreationDTO category)
@@ -91,8 +112,15 @@ namespace eCommerceApp.Server.Controllers
             return CreatedAtRoute("CategoryById", new { categoryId = categoryToReturn.Id }, categoryToReturn);
         }
 
-        // URL from swaggerUI is ERR
-        // Exact URL: https://localhost:5001/api/1/categories/collection/(id1, id2,..idn)
+        /// <summary>
+        /// Get the collection of categories
+        /// <para>URL from swaggerUI is ERR. Please use POSTMAN to test</para>
+        /// <para>Exact URL: https://localhost:5001/api/1/categories/collection/(id1, id2,..idn)</para>
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns>Collection of categories</returns>
+        /// <response code="400">If the item is null</response>
+        /// <response code="404">If one or more Id does not exist in the database</response>
         [HttpGet("collection/({ids})", Name = "CategoryCollection")]
         public async Task<IActionResult> GetCategoryCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
         {
@@ -114,6 +142,14 @@ namespace eCommerceApp.Server.Controllers
             return Ok(categoriesToReturn);
         }
 
+        /// <summary>
+        /// Creates newly created category collection
+        /// </summary>
+        /// <param name="categoryCollection"></param>
+        /// <returns>List of newly created categories</returns>
+        ///<response code="201">Returns the newly created items collection</response>
+        /// <response code="400">If the item is null</response>
+        /// <response code="422">If the model is invalid</response>
         [HttpPost("collection")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCategoryCollection([FromBody] IEnumerable<CategoryForCreationDTO> categoryCollection)
@@ -132,6 +168,14 @@ namespace eCommerceApp.Server.Controllers
             return CreatedAtRoute("CategoryCollection", new { ids }, categoryCollectionToReturn);
         }
 
+        /// <summary>
+        /// Update category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="category"></param>
+        /// <returns>No content</returns>
+        /// <response code="204">Update completed</response>
+        /// <response code="404">Id does not exist in the database</response>
         [HttpPut("{categoryId}")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
         public async Task<IActionResult> UpdateCategory(Guid categoryId, [FromBody] CategoryForUpdateDTO category)
@@ -145,6 +189,12 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Delete category by Id
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns>No content</returns>
+        /// <response code="404">Id does not exist in the database</response>
         [HttpDelete("{categoryId}")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
         public async Task<IActionResult> DeleteCategory(Guid categoryId)
@@ -157,6 +207,15 @@ namespace eCommerceApp.Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Partially update category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="patchDoc"></param>
+        /// <returns>No content</returns>
+        /// <response code="404">Id does not exist in the database</response>
+        /// <response code="204">Update completed</response>
+        /// <response code="422">If the model is invalid</response>
         [HttpPatch("{categoryId}")]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
         public async Task<IActionResult> PartiallyUpdateCategory(Guid categoryId,
