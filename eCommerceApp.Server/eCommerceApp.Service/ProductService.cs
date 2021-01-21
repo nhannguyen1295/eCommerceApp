@@ -20,7 +20,7 @@ namespace eCommerceApp.Service
 
         public Task SaveAsync() => _repositoryManager.SaveAsync();
 
-        public async Task CreateProductForCategory(Guid categoryId, Product product)
+        public async Task CreateProductForCategoryAsync(Guid categoryId, Product product)
         {
             _repositoryManager.Product.CreateProduct(product);
             await SaveAsync();
@@ -29,7 +29,7 @@ namespace eCommerceApp.Service
         }
 
         public void CreateProductCategory(Guid categoryId, Guid productId)
-        => CreateProductCategory(categoryId, productId);
+        => _repositoryManager.ProductCategory.CreateProductCategory(categoryId, productId);
 
         public async Task<IEnumerable<ProductCategory>> GetProductsForCategoryAsync(Guid categoryId, bool trackChanges)
         {
@@ -56,7 +56,13 @@ namespace eCommerceApp.Service
         public async Task<IEnumerable<Category>> GetCategoriesAsync(bool trackChanges)
         => await _repositoryManager.Category.GetCategoriesAsync(trackChanges);
 
-        public void CreateCategory(Category category)
-        => _repositoryManager.Category.CreateCategory(category);
+        public async Task CreateCategoryForProductAsync(Guid productId, Category category)
+        {
+            _repositoryManager.Category.CreateCategory(category);
+            await SaveAsync();
+            System.Console.WriteLine(category.Id.ToString(), Console.BackgroundColor = ConsoleColor.Blue);
+            _repositoryManager.ProductCategory.CreateProductCategory(category.Id, productId);
+            await SaveAsync();
+        }
     }
 }

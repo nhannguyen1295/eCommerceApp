@@ -105,7 +105,7 @@ namespace eCommerceApp.Server.Controllers
         public async Task<IActionResult> CreateProductForCategory(Guid categoryId, [FromBody] ProductForCreationDTO product)
         {
             var productEntity = _mapper.Map<Product>(product);
-            await _productService.CreateProductForCategory(categoryId, productEntity);
+            await _productService.CreateProductForCategoryAsync(categoryId, productEntity);
 
             var productToReturn = _mapper.Map<ProductDTO>(productEntity);
             return CreatedAtRoute("GetProductForCategory",
@@ -167,7 +167,7 @@ namespace eCommerceApp.Server.Controllers
             var productEntities = _mapper.Map<IEnumerable<Product>>(productsCollection);
             foreach (var product in productEntities)
             {
-                await _productService.CreateProductForCategory(categoryId, product);
+                await _productService.CreateProductForCategoryAsync(categoryId, product);
 
             }
 
@@ -276,25 +276,27 @@ namespace eCommerceApp.Server.Controllers
         }
 
         //!!! Pausing
-        // [HttpPost("/products/{productId}/categories/collection")]
-        // [ServiceFilter(typeof(ValidateProductExistAttribute))]
-        // public async Task<IActionResult> CreateCategoryCollectionForProduct(Guid productId,
-        //                                                                     [FromBody] IEnumerable<CategoryForCreationDTO> categories)
-        // {
-        //     var categoryEntities = _mapper.Map<IEnumerable<Category>>(categories);
-        //     var categoriesDB = await _productService.GetCategoriesAsync(trackChanges: false);
-        //     var setToRemove = new HashSet<Category>(categoriesDB.Where(x => categoryEntities.Any(y => y.Name == x.Name)));
-        //     categoryEntities.ToList().RemoveAll(x => setToRemove.Contains(x));
+        [HttpPost("/v{v:apiversion}/products/{productId}/categories/collection")]
+        [ServiceFilter(typeof(ValidateProductExistAttribute))]
+        public async Task<IActionResult> CreateCategoryCollectionForProduct(Guid productId,
+                                                                            [FromBody] IEnumerable<CategoryForProductUpdateDTO> categories)
+        {
+            var categoryEntities = _mapper.Map<IEnumerable<Category>>(categories);
+            var categoriesDB = await _productService.GetCategoriesAsync(trackChanges: false);
+            foreach (var category in categoryEntities)
+            {
+                if (categoriesDB.Any(x => x.Name == category.Name))
+                {
+                    _productService.CreateProductCategory(category.Id, productId);
+                    await _productService.SaveAsync();
+                }
+                else
+                {
+                    await _productService.CreateCategoryForProductAsync(productId, category);
+                }
+            }
 
-        //     foreach (var category in categoryEntities)
-        //     {
-        //         _productService.CreateCategory(category);
-        //         await _productService.SaveAsync();
-        //         _productService.CreateProductCategory(productId, category.Id);
-        //     }
-
-        //     await _productService.SaveAsync();
-        //     return NoContent();
-        // }
+            return NoContent();
+        }
     }
 }
