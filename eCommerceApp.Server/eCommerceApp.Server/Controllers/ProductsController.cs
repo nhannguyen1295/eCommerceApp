@@ -81,11 +81,6 @@ namespace eCommerceApp.Server.Controllers
         public async Task<IActionResult> GetProductForCategory(Guid categoryId, Guid productId)
         {
             var product = await _productService.GetProductAsync(productId, trackChanges: false);
-            if (product is null)
-            {
-                _loggerManager.LogInfo($"Product with id: {productId} does not exist in the database");
-                return NotFound();
-            }
             var productDTO = _mapper.Map<ProductDTO>(product);
             return Ok(productDTO);
         }
@@ -157,18 +152,18 @@ namespace eCommerceApp.Server.Controllers
         /// <param name="productsCollection"></param>
         /// <returns>A collection of newly created products</returns>
         ///  <response code="201">Returns the collection of newly created products</response>
-        /// <response code="400">If parameter ids is NULL</response>
+        /// <response code="400">If parameter is NULL</response>
         /// <response code="404">If categoryId does not exist in the database</response>
         [HttpPost("collection")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateCategoryExistsAttribute))]
-        public async Task<IActionResult> CreateProductCollectionForCategory(Guid categoryId, [FromBody] IEnumerable<ProductForCreationDTO> productsCollection)
+        public async Task<IActionResult> CreateProductCollectionForCategory(Guid categoryId,
+                                                                            [FromBody] IEnumerable<ProductForCreationDTO> productsCollection)
         {
             var productEntities = _mapper.Map<IEnumerable<Product>>(productsCollection);
             foreach (var product in productEntities)
             {
                 await _productService.CreateProductForCategoryAsync(categoryId, product);
-
             }
 
             var productCollectionToReturn = _mapper.Map<IEnumerable<ProductDTO>>(productEntities);
@@ -263,8 +258,8 @@ namespace eCommerceApp.Server.Controllers
         /// </summary>
         /// <param name="productId"></param>
         /// <returns>The list of categories for product</returns>
-        /// <response code="404">CaProductId does not exist in the database</response>
-        [HttpGet("/products/{productId}/categories", Name = "GetCategoriesForProduct")]
+        /// <response code="404">ProductId does not exist in the database</response>
+        [HttpGet("/api/v{v:apiversion}/products/{productId}/categories", Name = "GetCategoriesForProduct")]
         [ServiceFilter(typeof(ValidateProductExistAttribute))]
         public async Task<IActionResult> GetCategoriesForProduct(Guid productId)
         {
@@ -275,8 +270,14 @@ namespace eCommerceApp.Server.Controllers
             return Ok(categoriesToReturn);
         }
 
-        //!!! Pausing
-        [HttpPost("/v{v:apiversion}/products/{productId}/categories/collection")]
+        /// <summary>
+        /// Create a collection of categories for product
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="categories"></param>
+        /// <returns>No content</returns>
+        /// <response code="404">CaProductId does not exist in the database</response>
+        [HttpPost("/api/v{v:apiversion}/products/{productId}/categories/collection")]
         [ServiceFilter(typeof(ValidateProductExistAttribute))]
         public async Task<IActionResult> CreateCategoryCollectionForProduct(Guid productId,
                                                                             [FromBody] IEnumerable<CategoryForProductUpdateDTO> categories)

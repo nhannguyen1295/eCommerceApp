@@ -74,6 +74,7 @@ namespace eCommerceApp.Server.Controllers
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
+        /// <response code="200">Login successfully</response>
         /// <response code="401">If wrong username/password</response>
         /// <response code="422">If invalid object</response>
         [HttpPost("login")]

@@ -41,7 +41,7 @@ namespace eCommerceApp.Server
             services.ConfigureCors();
             services.AddAutoMapper(typeof(Startup));
             services.ConfigureVersioning();
-            //services.ConfigureResponseCaching(); // Commented to test EF Core
+            services.ConfigureResponseCaching();
             services.ConfigureHttpCacheHeaders();
             services.AddMemoryCache();
 

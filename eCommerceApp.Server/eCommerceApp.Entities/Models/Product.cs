@@ -30,14 +30,13 @@ namespace eCommerceApp.Entities.Models
 
         public ICollection<ProductTag> ProductTags { get; set; }
 
-        public ICollection<ProductImage> ProductImages { get; set; }
-        public ICollection<ProductVideo> ProductVideos { get; set; }
-
-        public ICollection<ProductDetail> ProductDetails { get; set; }
+        public ICollection<ProductMedia> ProductMedias { get; set; }
 
         public ICollection<OrderItem> OrderItems { get; set; }
 
         public ICollection<Invoice> Invoices { get; set; }
+
+        public ICollection<ProductAttributeValue> ProductAttributeValues { get; set; }
     }
 
     public enum ProductStatus

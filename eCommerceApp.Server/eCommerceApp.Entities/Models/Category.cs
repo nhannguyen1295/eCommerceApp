@@ -25,5 +25,7 @@ namespace eCommerceApp.Entities.Models
 
         // 1 - n referencing to ProductCategory
         public ICollection<ProductCategory> ProductCategories { get; set; }
+
+        public ICollection<CategoryAttributeValue> CategoryAttributeValues { get; set; }
     }
 }

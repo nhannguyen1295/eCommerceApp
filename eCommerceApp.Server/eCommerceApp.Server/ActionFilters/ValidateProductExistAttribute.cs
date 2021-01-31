@@ -31,7 +31,6 @@ namespace eCommerceApp.Server.ActionFilters
             }
             else
             {
-                context.HttpContext.Items.Add("product", product);
                 await next();
             }
         }

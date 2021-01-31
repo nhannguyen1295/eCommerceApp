@@ -22,7 +22,6 @@ namespace eCommerceApp.Server
             CreateMap<ProductForUpdateDTO, Product>();
             CreateMap<ProductForUpdateDTO, Product>().ReverseMap();
             CreateMap<CategoryForProductUpdateDTO, Category>();
-
         }
     }
 }

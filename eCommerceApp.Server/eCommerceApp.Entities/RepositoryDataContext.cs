@@ -57,6 +57,30 @@ namespace eCommerceApp.Entities
                    .HasOne(x => x.Shipment)
                    .WithMany(x => x.ShipmentOrderItems)
                    .HasForeignKey(x => x.ShipmentId);
+
+
+            // Atribute n - n ProductAttributeValue referencing
+            builder.Entity<AttributeValue>().HasKey(x => new { x.AttributeId, x.ProductAttributeValueId });
+            builder.Entity<AttributeValue>()
+                   .HasOne(x => x.Attribute)
+                   .WithMany(x => x.AttributeValues)
+                   .HasForeignKey(x => x.AttributeId);
+            builder.Entity<AttributeValue>()
+                   .HasOne(x => x.ProductAttributeValue)
+                   .WithMany(x => x.AttributeValues)
+                   .HasForeignKey(x => x.ProductAttributeValueId);
+
+            //Category n - n AttributeValue referencing
+            builder.Entity<CategoryAttributeValue>().HasKey(x => new { x.CategoryId, x.AttributeValueId });
+            builder.Entity<CategoryAttributeValue>()
+                   .HasOne(x => x.Category)
+                   .WithMany(x => x.CategoryAttributeValues)
+                   .HasForeignKey(x => x.CategoryId);
+            builder.Entity<CategoryAttributeValue>()
+                   .HasOne(x => x.AttributeValue)
+                   .WithMany(x => x.CategoryAttributeValues)
+                   .HasForeignKey(x => x.AttributeValueId)
+                   .HasPrincipalKey(x => x.PrincipalKey);
         }
 
         public DbSet<Category> Categories { get; set; }
@@ -67,8 +91,12 @@ namespace eCommerceApp.Entities
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
-        public DbSet<ProductDetail> ProductDetails { get; set; }
+        public DbSet<ProductMedia> ProductMedias { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Shipment> Shipments { get; set; }
+        public DbSet<Attribute> Attributes { get; set; }
+        public DbSet<AttributeValue> AttributeValues { get; set; }
+        public DbSet<CategoryAttributeValue> CategoryAttributeValues { get; set; }
+        public DbSet<ProductAttributeValue> ProductAttributeValues { get; set; }
     }
 }

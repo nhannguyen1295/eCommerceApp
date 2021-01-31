@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using eCommerceApp.Contract;
 using eCommerceApp.Entities;
+using eCommerceApp.Entities.Models;
 
 namespace eCommerceApp.Repository
 {
@@ -10,6 +11,7 @@ namespace eCommerceApp.Repository
         private ICategoryRepository _category;
         private IProductRepository _product;
         private IProductCategoryRepository _productCategory;
+        private IProductMediaRepository _productMedia;
 
         public RepositoryManager(RepositoryDataContext context) => _repository = context;
 
@@ -39,6 +41,17 @@ namespace eCommerceApp.Repository
                 return _productCategory;
             }
         }
+
+
+        public IProductMediaRepository ProductMedia
+        {
+            get
+            {
+                if (_productMedia is null) _productMedia = new ProductMediaRepository(_repository);
+                return _productMedia;
+            }
+        }
+
 
         public Task SaveAsync() => _repository.SaveChangesAsync();
     }
