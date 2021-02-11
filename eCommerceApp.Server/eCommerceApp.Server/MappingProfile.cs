@@ -22,6 +22,8 @@ namespace eCommerceApp.Server
             CreateMap<ProductForUpdateDTO, Product>();
             CreateMap<ProductForUpdateDTO, Product>().ReverseMap();
             CreateMap<CategoryForProductUpdateDTO, Category>();
+
+            CreateMap<ProductMedia, ProductMediaDTO>().ForMember(x => x.File, opt => opt.Ignore());
         }
     }
 }

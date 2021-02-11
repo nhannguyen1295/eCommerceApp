@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eCommerceApp.Entities;
 
 namespace eCommerceApp.Server.Migrations
 {
     [DbContext(typeof(RepositoryDataContext))]
-    partial class RepositoryDataContextModelSnapshot : ModelSnapshot
+    [Migration("20210211111901_ImproveProductMediaTable")]
+    partial class ImproveProductMediaTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,22 +50,22 @@ namespace eCommerceApp.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5f5e86d0-a225-4c8d-9ddc-26c3db9c98fe",
-                            ConcurrencyStamp = "3c8b37f1-fa39-4713-9048-48ff5a0dd50a",
+                            Id = "b47ccc33-6d6c-4145-b426-80e3f41227e0",
+                            ConcurrencyStamp = "a85cdddb-9c33-4594-88a4-8f7d38fd7a16",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "bd30e79a-0268-4293-b206-392529f71b46",
-                            ConcurrencyStamp = "8ee1c09f-6759-4dae-a71c-eaf23e923ff6",
+                            Id = "df4827e6-335c-4fb9-8563-dac1f5e97905",
+                            ConcurrencyStamp = "48aec47c-9e8c-4070-8565-2d4c564bc075",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = "6f7cccbe-6bed-4dcb-9606-ef97e1d6b008",
-                            ConcurrencyStamp = "1cddf7cb-8276-40e1-8769-861e7cc83ff7",
+                            Id = "7b5be521-af9b-4647-8180-18201a7102b3",
+                            ConcurrencyStamp = "49451f9f-59f8-4685-a9fa-430783188317",
                             Name = "NormalUser",
                             NormalizedName = "NORMUSER"
                         });
@@ -661,9 +663,6 @@ namespace eCommerceApp.Server.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FileExtension")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");

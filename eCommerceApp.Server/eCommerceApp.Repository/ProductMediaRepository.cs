@@ -14,10 +14,13 @@ namespace eCommerceApp.Repository
         {
         }
 
-        public void CreateProductDetail(ProductMedia productMedia) => Create(productMedia);
-        public void DeleteProductDetail(ProductMedia productMedia) => Delete(productMedia);
+        public void CreateProductMedia(ProductMedia productMedia) => Create(productMedia);
+        public void DeleteProductMedia(ProductMedia productMedia) => Delete(productMedia);
 
-        public async Task<IEnumerable<ProductMedia>> GetProductMediasAsync(Guid productId, bool trackChanges)
+        public async Task<ProductMedia> GetProductMediaAsync(Guid productId, Guid mediaId, bool trackChanges)
+        => await FindByCondition(x => x.ProductId == productId && x.Id == mediaId, trackChanges).FirstOrDefaultAsync();
+
+        public async Task<IEnumerable<ProductMedia>> GetProductMediumAsync(Guid productId, bool trackChanges)
         => await FindByCondition(x => x.ProductId == productId, trackChanges).ToListAsync();
     }
 }

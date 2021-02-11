@@ -22,6 +22,7 @@ using AutoMapper;
 using AspNetCoreRateLimit;
 using eCommerceApp.Server.ActionFilters;
 using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
 
 namespace eCommerceApp.Server
 {
@@ -61,6 +62,8 @@ namespace eCommerceApp.Server
             services.DIConfigureProductCategoryRepository();
             services.DIConfigureValidateProductCategoryExistsAttribute();
             services.DIConfigureValidateProductExistAttribute();
+            services.DIConfigureProductMediaRepository();
+            services.DIConfigureProductMediaService();
 
             services.ConfigureSQLDataContext(Configuration);
             services.AddAuthentication();
@@ -79,7 +82,9 @@ namespace eCommerceApp.Server
                 configure.Filters.Add(typeof(ValidateMediaTypeAttribute));
                 configure.RespectBrowserAcceptHeader = true;
                 configure.ReturnHttpNotAcceptable = true; // HTTP 406 if client required non-support media types
-            }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
+            }).AddNewtonsoftJson()
+                .AddXmlDataContractSerializerFormatters()
+                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             services.AddCustomMediaTypes(); // !!!Always put it under AddControllers to avoid ERR 
 

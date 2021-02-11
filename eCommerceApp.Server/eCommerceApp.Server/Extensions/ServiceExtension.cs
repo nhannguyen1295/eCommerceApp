@@ -7,8 +7,6 @@ using System.Text;
 using AspNetCoreRateLimit;
 using eCommerceApp.Contract;
 using eCommerceApp.Entities;
-using eCommerceApp.Entities.DTO;
-using eCommerceApp.Entities.Models;
 using eCommerceApp.Entities.Models.Identity;
 using eCommerceApp.LoggerService;
 using eCommerceApp.Repository;
@@ -316,5 +314,19 @@ namespace eCommerceApp.Server.Extensions
         /// <param name="services"></param>
         public static void DIConfigureValidateProductExistAttribute(this IServiceCollection services)
         => services.AddScoped<ValidateProductExistAttribute>();
+
+        /// <summary>
+        /// DI reg for ProductMediaRepository
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureProductMediaRepository(this IServiceCollection services)
+        => services.AddScoped<IProductMediaRepository, ProductMediaRepository>();
+
+        /// <summary>
+        /// DI reg for ProductMediaService
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureProductMediaService(this IServiceCollection services)
+        => services.AddScoped<IProductMediaService, ProductMediaService>();
     }
 }
