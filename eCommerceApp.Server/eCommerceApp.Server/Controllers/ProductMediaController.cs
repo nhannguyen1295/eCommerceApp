@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using eCommerceApp.Contract;
@@ -93,41 +94,47 @@ namespace eCommerceApp.Server.Controllers
         /// <param name="categoryId"></param>
         /// <param name="productId"></param>
         /// <param name="parameter"></param>
-        /// <param name="file"></param>
-        /// <returns>No content</returns>
-        /// <response code="204">If upload file successfully</response>
+        /// <param name="files"></param>
+        /// <returns>Total file uploaded and sum of sizes</returns>
+        /// <response code="200">If upload file successfully</response>
         /// <response code="400">If file is NULL or length = 0 or parameter is NULL</response>
         /// <response code="404">If CategoryId or ProductId does not exist in the database or them does not associated</response>
         [HttpPost]
         [ServiceFilter(typeof(ValidateProductCategoryExistsAttribute))]
-        public async Task<ActionResult> UploadProductMedium(Guid categoryId, Guid productId, [FromQuery] ProductMediaParameter parameter, IFormFile file)
+        public async Task<ActionResult> UploadProductMedium(Guid categoryId, Guid productId, [FromQuery] ProductMediaParameter parameter, List<IFormFile> files)
         {
-            if (file is null
-                || file.Length == 0
-                || parameter is null)
+            if (files is null || parameter is null)
             {
                 return BadRequest("File is NULL or parameter is NULL");
             }
 
-            var fileName = DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHHmmssffff");
-            var fileExtension = Path.GetExtension(file.FileName).Substring(1);
-            var fileNameToSave = String.Join(".", fileName, fileExtension);
+            long size = files.Sum(x => x.Length);
 
-            var mediaInformationToDB = new ProductMedia()
+            foreach (var file in files)
             {
-                FileName = fileName,
-                FileExtension = fileExtension,
-                ProductId = productId,
-                Type = parameter.Type
-            };
+                if (file.Length > 0)
+                {
+                    var fileName = DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHHmmssffff");
+                    var fileExtension = Path.GetExtension(file.FileName).Substring(1);
+                    var fileNameToSave = String.Join(".", fileName, fileExtension);
 
-            _productMediaService.CreateProductMedia(mediaInformationToDB);
+                    var mediaInformationToDB = new ProductMedia()
+                    {
+                        FileName = fileName,
+                        FileExtension = fileExtension,
+                        ProductId = productId,
+                        Type = parameter.Type
+                    };
 
-            await file.SaveFileAsync(parameter.Type, fileNameToSave);
+                    _productMediaService.CreateProductMedia(mediaInformationToDB);
+
+                    await file.SaveFileAsync(parameter.Type, fileNameToSave);
+                }
+            }
 
             await _productMediaService.SaveAsync();
 
-            return NoContent();
+            return Ok(new { count = files.Count, size });
         }
 
         /// <summary>
