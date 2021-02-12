@@ -10,6 +10,7 @@ using eCommerceApp.Server.ActionFilters;
 using eCommerceApp.Server.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace eCommerceApp.Server.Controllers
 {
@@ -47,22 +48,43 @@ namespace eCommerceApp.Server.Controllers
                                                                               parameter.Type,
                                                                               trackChanges: false);
             var fileConvertedResult = new List<string>();
-            var path = parameter.Type == MediaType.Picture ? Path.Combine(FileExtension.DATAPATH, "Pictures") : Path.Combine(FileExtension.DATAPATH, "Videos");
 
             if (productMediumInfo is not null)
             {
                 foreach (var productMediaInfo in productMediumInfo)
                 {
-                    var fullFileName = String.Join(".", productMediaInfo.FileName, productMediaInfo.FileExtension);
-                    var mime = String.Join("/", "application", productMediaInfo.FileExtension);
-                    Byte[] bytes = System.IO.File.ReadAllBytes(Path.Combine(path, fullFileName));
-                    string file = Convert.ToBase64String(bytes);
-                    fileConvertedResult.Add(file);
+                    var fileResult = FileExtension.ConvertFileToBase64String(productMediaInfo, parameter.Type);
+                    fileConvertedResult.Add(fileResult);
                 }
             }
 
             if (fileConvertedResult is not null) return Ok(fileConvertedResult);
             else return NotFound();
+        }
+
+        /// <summary>
+        /// Get a media for Product
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="productId"></param>
+        /// <param name="mediaId"></param>
+        /// <param name="parameter"></param>
+        /// <returns>A media for product</returns>
+        /// <response code="404">If doesn't have any media of Product</response>
+        /// <response code="200">Return a media</response>
+        [HttpGet("{mediaId}", Name = "GetProductMedia")]
+        public async Task<IActionResult> GetProductMedia(Guid categoryId, Guid productId, Guid mediaId, [FromQuery] ProductMediaParameter parameter)
+        {
+            var productMediaInfo = await _productMediaService.GetProductMediaAsync(productId, mediaId, false);
+
+            if (productMediaInfo is not null)
+            {
+                var fileResult = FileExtension.ConvertFileToBase64String(productMediaInfo, parameter.Type);
+
+                return Ok(JsonConvert.SerializeObject(fileResult));
+            }
+
+            return NotFound();
         }
 
         /// <summary>
@@ -127,7 +149,7 @@ namespace eCommerceApp.Server.Controllers
             {
                 return NotFound($"Doesn't exist media with id: {mediaId} in the database");
             }
-            var path = parameter.Type == MediaType.Picture ? Path.Combine(FileExtension.DATAPATH, "Pictures") : Path.Combine(FileExtension.DATAPATH, "Videos");
+            var path = FileExtension.GetTruePath(parameter.Type);
             var fullFileName = String.Join(".", productMedia.FileName, productMedia.FileExtension);
             var fullPath = Path.Combine(path, fullFileName);
             if (System.IO.File.Exists(fullPath))
