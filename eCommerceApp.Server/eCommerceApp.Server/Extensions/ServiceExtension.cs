@@ -328,5 +328,19 @@ namespace eCommerceApp.Server.Extensions
         /// <param name="services"></param>
         public static void DIConfigureProductMediaService(this IServiceCollection services)
         => services.AddScoped<IProductMediaService, ProductMediaService>();
+
+        /// <summary>
+        /// DI reg for ValidateMaxFileSizeAttribute
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureValidateMaxFileSizeAttribute(this IServiceCollection services)
+        => services.AddScoped<ValidateMaxFileSizeAttribute>();
+
+        /// <summary>
+        /// DI reg for ValidateFileExtensionAttribute
+        /// </summary>
+        /// <param name="services"></param>
+        public static void DIConfigureValidateFileExtensionAttribute(this IServiceCollection services)
+        => services.AddScoped<ValidateFileExtensionAttribute>();
     }
 }

@@ -101,6 +101,8 @@ namespace eCommerceApp.Server.Controllers
         /// <response code="404">If CategoryId or ProductId does not exist in the database or them does not associated</response>
         [HttpPost]
         [ServiceFilter(typeof(ValidateProductCategoryExistsAttribute))]
+        [ServiceFilter(typeof(ValidateMaxFileSizeAttribute))]
+        [ServiceFilter(typeof(ValidateFileExtensionAttribute))]
         public async Task<ActionResult> UploadProductMedium(Guid categoryId, Guid productId, [FromQuery] ProductMediaParameter parameter, List<IFormFile> files)
         {
             if (files is null || parameter is null)

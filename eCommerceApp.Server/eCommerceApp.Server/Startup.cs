@@ -64,6 +64,8 @@ namespace eCommerceApp.Server
             services.DIConfigureValidateProductExistAttribute();
             services.DIConfigureProductMediaRepository();
             services.DIConfigureProductMediaService();
+            services.DIConfigureValidateMaxFileSizeAttribute();
+            services.DIConfigureValidateFileExtensionAttribute();
 
             services.ConfigureSQLDataContext(Configuration);
             services.AddAuthentication();
