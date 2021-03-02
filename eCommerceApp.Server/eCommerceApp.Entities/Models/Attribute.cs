@@ -17,5 +17,6 @@ namespace eCommerceApp.Entities.Models
         public ICollection<AttributeValue> AttributeValues { get; set; }
         public DateTime InsertedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public ICollection<CategoryAttribute> CategoryAttributes { get; set; }
     }
 }

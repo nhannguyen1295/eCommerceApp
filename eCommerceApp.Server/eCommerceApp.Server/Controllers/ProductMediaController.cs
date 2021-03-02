@@ -66,7 +66,6 @@ namespace eCommerceApp.Server.Controllers
         /// <summary>
         /// Get a media for Product
         /// </summary>
-        /// <param name="categoryId"></param>
         /// <param name="productId"></param>
         /// <param name="mediaId"></param>
         /// <param name="parameter"></param>
@@ -74,7 +73,7 @@ namespace eCommerceApp.Server.Controllers
         /// <response code="404">If doesn't have any media of Product</response>
         /// <response code="200">Return a media</response>
         [HttpGet("{mediaId}", Name = "GetProductMedia")]
-        public async Task<IActionResult> GetProductMedia(Guid categoryId, Guid productId, Guid mediaId, [FromQuery] ProductMediaParameter parameter)
+        public async Task<IActionResult> GetProductMedia(Guid productId, Guid mediaId, [FromQuery] ProductMediaParameter parameter)
         {
             var productMediaInfo = await _productMediaService.GetProductMediaAsync(productId, mediaId, false);
 
@@ -91,7 +90,6 @@ namespace eCommerceApp.Server.Controllers
         /// <summary>
         /// Upload a media for product
         /// </summary>
-        /// <param name="categoryId"></param>
         /// <param name="productId"></param>
         /// <param name="parameter"></param>
         /// <param name="files"></param>
@@ -103,7 +101,7 @@ namespace eCommerceApp.Server.Controllers
         [ServiceFilter(typeof(ValidateProductCategoryExistsAttribute))]
         [ServiceFilter(typeof(ValidateMaxFileSizeAttribute))]
         [ServiceFilter(typeof(ValidateFileExtensionAttribute))]
-        public async Task<ActionResult> UploadProductMedium(Guid categoryId, Guid productId, [FromQuery] ProductMediaParameter parameter, List<IFormFile> files)
+        public async Task<ActionResult> UploadProductMedium(Guid productId, [FromQuery] ProductMediaParameter parameter, List<IFormFile> files)
         {
             if (files is null || parameter is null)
             {
